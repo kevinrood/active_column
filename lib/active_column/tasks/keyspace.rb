@@ -13,9 +13,9 @@ module ActiveColumn
         ks
       end
 
-      def initialize
+      def initialize(keyspace_name = 'system')
         c = ActiveColumn.connection
-        @cassandra = Cassandra.new('system', c.servers, c.thrift_client_options)
+        @cassandra = Cassandra.new(keyspace_name.to_s, c.servers, c.thrift_client_options)
       end
 
       def exists?(name)
@@ -36,14 +36,6 @@ module ActiveColumn
         @cassandra.drop_keyspace name.to_s
       end
 
-      def set(name)
-        @cassandra.keyspace = name.to_s
-      end
-
-      def get
-        @cassandra.keyspace
-      end
-
       def clear
         return puts 'Cannot clear system keyspace' if @cassandra.keyspace == 'system'
 
@@ -59,11 +51,15 @@ module ActiveColumn
           @cassandra.drop_column_family cf.name
         end
 
-        keyspace = get
+        keyspace = name
         schema.cf_defs.each do |cf|
           cf.keyspace = keyspace
           @cassandra.add_column_family cf
         end
+      end
+
+      def name
+        @cassandra.keyspace
       end
 
     end

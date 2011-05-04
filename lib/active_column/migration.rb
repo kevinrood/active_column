@@ -43,17 +43,17 @@ module ActiveColumn
     #
     # Scroll down to the CfDef definition.
     def self.create_column_family(name, &block)
-      ActiveColumn.column_family_tasks.create(name, &block)
+      ActiveColumn.column_family_tasks(ActiveColumn.connection.keyspace).create(name, &block)
     end
 
     # Drops the given column family
     def self.drop_column_family(name)
-      ActiveColumn.column_family_tasks.drop(name)
+      ActiveColumn.column_family_tasks(ActiveColumn.connection.keyspace).drop(name)
     end
 
     # Renames the column family from the old name to the new name
     def self.rename_column_family(old_name, new_name)
-      ActiveColumn.column_family_tasks.rename(old_name, new_name)
+      ActiveColumn.column_family_tasks(ActiveColumn.connection.keyspace).rename(old_name, new_name)
     end
 
     def self.write(text="")

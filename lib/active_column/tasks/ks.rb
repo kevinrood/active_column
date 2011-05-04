@@ -117,8 +117,8 @@ namespace :ks do
 
   def set_keyspace(env = Rails.env)
     config = @configs[env.to_s || 'development']
-    ks = ActiveColumn::Tasks::Keyspace.new
-    ks.set config['keyspace']
+    keyspace_name = config['keyspace']
+    ks = ActiveColumn::Tasks::Keyspace.new(keyspace_name)
     ks
   end
 

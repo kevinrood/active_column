@@ -16,7 +16,7 @@ module ActiveColumn
     end
 
     def column_family_tasks(keyspace = nil)
-      ActiveColumn::Tasks::ColumnFamily.new(keyspace || @@keyspace_tasks.get)
+      ActiveColumn::Tasks::ColumnFamily.new(keyspace || @@keyspace_tasks.name)
     end
 
   end

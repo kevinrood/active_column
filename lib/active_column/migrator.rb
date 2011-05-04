@@ -64,17 +64,17 @@ module ActiveColumn
       'ks/migrate'
     end
 
-    def self.schema_migrations_column_family
+    def self.schema_migrations_column_family_name
       :schema_migrations
     end
 
     def self.get_all_versions
       cas = ActiveColumn.connection
-      cas.get(schema_migrations_column_family, 'all').map {|(name, _value)| name.to_i}.sort
+      cas.get(schema_migrations_column_family_name, 'all').map {|(name, _value)| name.to_i}.sort
     end
 
     def self.current_version
-      sm_cf = schema_migrations_column_family
+      sm_cf = schema_migrations_column_family_name
       if ActiveColumn.column_family_tasks.exists?(sm_cf)
         get_all_versions.max || 0
       else
@@ -98,8 +98,8 @@ module ActiveColumn
     public
 
     def initialize(direction, migrations_path, target_version = nil)
-      cf_tasks = ActiveColumn.column_family_tasks
-      sm_cf = self.class.schema_migrations_column_family
+      cf_tasks = ActiveColumn.column_family_tasks(ActiveColumn.connection.keyspace)
+      sm_cf = self.class.schema_migrations_column_family_name
 
       unless cf_tasks.exists?(sm_cf)
         cf_tasks.create(sm_cf) do |cf|
@@ -202,7 +202,7 @@ module ActiveColumn
 
     def record_version_state_after_migrating(migration)
       cas = ActiveColumn.connection
-      sm_cf = self.class.schema_migrations_column_family
+      sm_cf = self.class.schema_migrations_column_family_name
 
       @migrated_versions ||= []
       if down?
